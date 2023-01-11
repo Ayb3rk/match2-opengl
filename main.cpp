@@ -26,10 +26,16 @@ using namespace std;
 GLuint gProgram[3];
 GLint gIntensityLoc;
 float gIntensity = 1000;
-int gWidth = 0;
-int gHeight = 0;
+int numberOfRows = 0;
+int numberOfColumns = 0;
 float maxEdgeLength = 0.0f;
 float scalingFactor = 0.0f;
+float cellWidth = 0.0f;
+float cellHeight = 0.0f;
+std::vector<std::vector<bool>> isClicked;
+std::vector<std::vector<float>> scaling;
+std::vector<std::vector<bool>> isDisplaying;
+bool anyClicked = false;
 
 struct Vertex
 {
@@ -501,7 +507,6 @@ void init()
 {
 	//ParseObj("armadillo.obj");
 	ParseObj("bunny.obj");
-
     glEnable(GL_DEPTH_TEST);
     initShaders();
     initFonts(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -583,16 +588,30 @@ void display()
 	//glTranslatef(-2, 0, -10);
 	//glRotatef(angle, 0, 1, 0);
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
+    // translate to the top left corner of the grid
+    glm::mat4 Ttop = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
 
-    // create a grid with gWidth x gHeight cells
-    for (int i = 0; i < gWidth; i++)
+    for (int i = 0; i < numberOfRows; i++)
     {
-        for (int j = 0; j < gHeight; j++)
+        for (int j = 0; j < numberOfColumns; j++)
         {
-            glm::mat4 T = glm::translate(glm::mat4(1.f), glm::vec3((i+0.5) * (20.0 / gWidth) - 10.0f , (j+0.5) * (20.0 / gHeight) - 10.0f , 0.f));
+            if(isDisplaying[i][j] == false) {
+                continue;
+            }
+            if(isClicked[i][j] == true) {
+                if(scaling[i][j] > 1.5 * scalingFactor) {
+                    isClicked[i][j] = false;
+                    isDisplaying[i][j] = false;
+                    anyClicked = false;
+                }
+                else {
+                    scaling[i][j] += 0.01f;
+                }
+            }
+            glm::mat4 T = glm::translate(glm::mat4(1.f), glm::vec3((i+0.5f) * (20.f / numberOfColumns), -(j+0.5f) * (20.f / numberOfRows), 0.f));
             glm::mat4 R = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::vec3(0, 1, 0));
-            glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(scalingFactor, scalingFactor, scalingFactor));
-            glm::mat4 modelMat = T*S*R;
+            glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(scaling[i][j], scaling[i][j], scaling[i][j]));
+            glm::mat4 modelMat = Ttop*T*S*R;
             glm::mat4 modelMatInv = glm::transpose(glm::inverse(modelMat));
 
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
@@ -615,8 +634,23 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+}
 
-    // TODO: Add mouse click handler
+void mouse(GLFWwindow* window, int button, int action, int mods)
+{
+    // find which grid cell is clicked
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        int x = (int)(xpos / cellWidth);
+        int y = (int)(ypos / cellHeight);
+        std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
+        if(anyClicked == false) {
+            anyClicked = true;
+            isClicked[x][y] = true;
+        }
+    }
 }
 
 void mainLoop(GLFWwindow* window)
@@ -636,8 +670,10 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
         return -1;
     }
 
-    gWidth = atoi(argv[1]);
-    gHeight = atoi(argv[2]);
+    numberOfColumns = atoi(argv[1]);
+    numberOfRows = atoi(argv[2]);
+    cellWidth = WINDOW_WIDTH / numberOfColumns;
+    cellHeight = WINDOW_HEIGHT / numberOfRows;
 
 
     GLFWwindow* window;
@@ -679,13 +715,27 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     init();
 
 
-    scalingFactor = (15.0f / std::max(gWidth, gHeight)) / maxEdgeLength;
+    scalingFactor = (15.0f / std::max(numberOfColumns, numberOfRows)) / maxEdgeLength;
 
-    std::cout << "Scaling factor: " << scalingFactor << std::endl;
-
+    isClicked = vector<vector<bool>>(numberOfColumns);
+    scaling = vector<vector<float>>(numberOfColumns);
+    isDisplaying = vector<vector<bool>>(numberOfColumns);
+    for(int i = 0; i < numberOfColumns; i++)
+    {
+        isClicked[i] = vector<bool>(numberOfRows);
+        scaling[i] = vector<float>(numberOfRows);
+        isDisplaying[i] = vector<bool>(numberOfRows);
+        for(int j = 0; j < numberOfRows; j++)
+        {
+            isClicked[i][j] = false;
+            isDisplaying[i][j] = true;
+            scaling[i][j] = scalingFactor;
+        }
+    }
 
 
     glfwSetKeyCallback(window, keyboard);
+    glfwSetMouseButtonCallback(window, mouse);
 
     mainLoop(window); // this does not return unless the window is closed
 
