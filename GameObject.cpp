@@ -78,7 +78,7 @@ void GameObject::rotate()
 
 void GameObject::scale()
 {
-    this->scaleFactor += 0.01f;
+    this->scaleFactor *= 1.01;
 }
 
 void GameObject::setIsScaling(bool isScaling)

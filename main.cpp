@@ -34,6 +34,7 @@ float scalingFactor = 0.0f;
 float cellWidth = 0.0f;
 float cellHeight = 0.0f;
 std::vector<std::vector<GameObject*>> gameObjects;
+std::vector<glm::vec3> colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)};
 bool anyClicked = false;
 
 struct Vertex
@@ -603,6 +604,7 @@ void display()
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMatInvTr"), 1, GL_FALSE, glm::value_ptr(modelMatInv));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+            glUniform3fv(glGetUniformLocation(gProgram[0], "kd"), 1, glm::value_ptr(gameObjects[i][j]->getColor()));
 
             drawModel();
             gameObjects[i][j]->rotate();
@@ -611,8 +613,6 @@ void display()
 
     renderText("CENG 477 - 2022", 0, 0, 1, glm::vec3(0, 1, 1));
     assert(glGetError() == GL_NO_ERROR);
-
-	angle += 0.5;
 }
 
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -710,8 +710,8 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
         {
             glm::mat4 T = Ttop * glm::translate(glm::mat4(1.f), glm::vec3((j+0.5f) * (20.f / numberOfColumns), -(i+0.5f) * (20.f / numberOfRows), 0.f));
             glm::mat4 R = glm::rotate(glm::mat4(1.f), glm::radians(0.0f), glm::vec3(0, 1, 0));
-            
-            gameObjects[i][j] = new GameObject(i, j, glm::vec3(0.7, 0, 0.2), scalingFactor, T, R);
+            glm::vec3 color = colors[std::rand() % colors.size()];
+            gameObjects[i][j] = new GameObject(i, j, color, scalingFactor, T, R);
 
         }
     }
