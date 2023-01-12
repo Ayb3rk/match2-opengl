@@ -16,6 +16,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include "GameObject.h"
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 #define WINDOW_WIDTH 640
@@ -32,9 +33,7 @@ float maxEdgeLength = 0.0f;
 float scalingFactor = 0.0f;
 float cellWidth = 0.0f;
 float cellHeight = 0.0f;
-std::vector<std::vector<bool>> isClicked;
-std::vector<std::vector<float>> scaling;
-std::vector<std::vector<bool>> isDisplaying;
+std::vector<std::vector<GameObject*>> gameObjects;
 bool anyClicked = false;
 
 struct Vertex
@@ -584,34 +583,21 @@ void display()
 	static float angle = 0;
 
     glUseProgram(gProgram[0]);
-	//glLoadIdentity();
-	//glTranslatef(-2, 0, -10);
-	//glRotatef(angle, 0, 1, 0);
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
-    // translate to the top left corner of the grid
-    glm::mat4 Ttop = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
 
     for (int i = 0; i < numberOfRows; i++)
     {
         for (int j = 0; j < numberOfColumns; j++)
         {
-            if(isDisplaying[i][j] == false) {
-                continue;
+            if(gameObjects[i][j]->getIsScaling()){
+                gameObjects[i][j]->scale();
             }
-            if(isClicked[i][j] == true) {
-                if(scaling[i][j] > 1.5 * scalingFactor) {
-                    isClicked[i][j] = false;
-                    isDisplaying[i][j] = false;
-                    anyClicked = false;
-                }
-                else {
-                    scaling[i][j] += 0.01f;
-                }
+            if(gameObjects[i][j]->getScaleFactor() >= 1.5 * scalingFactor){
+                gameObjects[i][j]->setIsScaling(false);
+                gameObjects[i][j]->setScaleFactor(scalingFactor);
             }
-            glm::mat4 T = glm::translate(glm::mat4(1.f), glm::vec3((i+0.5f) * (20.f / numberOfColumns), -(j+0.5f) * (20.f / numberOfRows), 0.f));
-            glm::mat4 R = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::vec3(0, 1, 0));
-            glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(scaling[i][j], scaling[i][j], scaling[i][j]));
-            glm::mat4 modelMat = Ttop*T*S*R;
+
+            glm::mat4 modelMat = gameObjects[i][j]->getModelMatrix();
             glm::mat4 modelMatInv = glm::transpose(glm::inverse(modelMat));
 
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
@@ -619,6 +605,7 @@ void display()
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
             drawModel();
+            gameObjects[i][j]->rotate();
         }
     }
 
@@ -646,10 +633,7 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
         int x = (int)(xpos / cellWidth);
         int y = (int)(ypos / cellHeight);
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
-        if(anyClicked == false) {
-            anyClicked = true;
-            isClicked[x][y] = true;
-        }
+        gameObjects[y][x]->setIsScaling(true);
     }
 }
 
@@ -684,8 +668,6 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Simple Example", NULL, NULL);
 
@@ -716,20 +698,21 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
 
 
     scalingFactor = (15.0f / std::max(numberOfColumns, numberOfRows)) / maxEdgeLength;
+    
+    glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
+    glm::mat4 Ttop = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
 
-    isClicked = vector<vector<bool>>(numberOfColumns);
-    scaling = vector<vector<float>>(numberOfColumns);
-    isDisplaying = vector<vector<bool>>(numberOfColumns);
-    for(int i = 0; i < numberOfColumns; i++)
+    gameObjects = vector<vector<GameObject*>>(numberOfRows);
+    for (int i = 0; i < numberOfRows; i++)
     {
-        isClicked[i] = vector<bool>(numberOfRows);
-        scaling[i] = vector<float>(numberOfRows);
-        isDisplaying[i] = vector<bool>(numberOfRows);
-        for(int j = 0; j < numberOfRows; j++)
+        gameObjects[i] = vector<GameObject*>(numberOfColumns);
+        for (int j = 0; j < numberOfColumns; j++)
         {
-            isClicked[i][j] = false;
-            isDisplaying[i][j] = true;
-            scaling[i][j] = scalingFactor;
+            glm::mat4 T = Ttop * glm::translate(glm::mat4(1.f), glm::vec3((j+0.5f) * (20.f / numberOfColumns), -(i+0.5f) * (20.f / numberOfRows), 0.f));
+            glm::mat4 R = glm::rotate(glm::mat4(1.f), glm::radians(0.0f), glm::vec3(0, 1, 0));
+            
+            gameObjects[i][j] = new GameObject(i, j, glm::vec3(0.7, 0, 0.2), scalingFactor, T, R);
+
         }
     }
 
