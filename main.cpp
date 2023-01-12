@@ -503,10 +503,9 @@ void initFonts(int windowWidth, int windowHeight)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void init() 
+void init(string filename) 
 {
-	//ParseObj("armadillo.obj");
-	ParseObj("bunny.obj");
+	ParseObj(filename);
     glEnable(GL_DEPTH_TEST);
     initShaders();
     initFonts(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -604,7 +603,7 @@ void display()
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMatInvTr"), 1, GL_FALSE, glm::value_ptr(modelMatInv));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
             glUniform3fv(glGetUniformLocation(gProgram[0], "kd"), 1, glm::value_ptr(gameObjects[i][j]->getColor()));
-
+            
             drawModel();
             gameObjects[i][j]->rotate();
         }
@@ -657,6 +656,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     numberOfRows = atoi(argv[2]);
     cellWidth = WINDOW_WIDTH / numberOfColumns;
     cellHeight = WINDOW_HEIGHT / numberOfRows;
+    string filename = argv[3];
 
 
     GLFWwindow* window;
@@ -693,8 +693,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     strcat(rendererInfo, (const char*) glGetString(GL_VERSION));
     glfwSetWindowTitle(window, rendererInfo);
 
-    init();
-
+    init(filename);
 
     scalingFactor = (15.0f / std::max(numberOfColumns, numberOfRows)) / maxEdgeLength;
     
