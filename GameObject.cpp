@@ -6,6 +6,7 @@ GameObject::GameObject(int verticalPosition, int horizontalPosition, glm::vec3 c
     this->horizontalPosition = horizontalPosition;
     this->color = color;
     this->scaleFactor = scaleFactor;
+    this->startingScaleFactor = scaleFactor;
     this->TranslationMatrix = TranslationMatrix;
     this->RotationMatrix = RotationMatrix;
     this->isFalling = false;
@@ -53,7 +54,6 @@ glm::vec3 GameObject::getColor()
 {
     return this->color;
 }
-
 
 glm::mat4 GameObject::getTranslationMatrix()
 {
@@ -109,5 +109,12 @@ void GameObject::setIsFalling(bool isFalling)
 bool GameObject::getIsFalling()
 {
     return this->isFalling;
+}
+
+void GameObject::reset()
+{
+    this->scaleFactor = this->startingScaleFactor;
+    this->isScaling = false;
+    this->isFalling = false;
 }
 

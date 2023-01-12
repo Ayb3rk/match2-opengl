@@ -594,8 +594,7 @@ void display()
                 gameObjects[i][j]->scale();
             }
             if(gameObjects[i][j]->getScaleFactor() >= 1.5 * scalingFactor){
-                gameObjects[i][j]->setIsScaling(false);
-                gameObjects[i][j]->setScaleFactor(scalingFactor);
+                gameObjects[i][j]->reset();
             }
 
             glm::mat4 modelMat = gameObjects[i][j]->getModelMatrix();
