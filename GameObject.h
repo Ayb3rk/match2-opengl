@@ -38,6 +38,7 @@ class GameObject
         void setRotationMatrix(glm::mat4);
         void setScaleFactor(float);
         void setIsScaling(bool);
+        void setIsFalling(bool);
 
         int getVerticalPosition();
         int getHorizontalPosition();
@@ -47,6 +48,7 @@ class GameObject
         glm::mat4 getRotationMatrix();
         glm::mat4 getModelMatrix();
         bool getIsScaling();
+        bool getIsFalling();
 
         void rotate();
         void scale();

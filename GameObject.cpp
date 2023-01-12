@@ -101,3 +101,13 @@ void GameObject::setScaleFactor(float scaleFactor)
     this->scaleFactor = scaleFactor;
 }
 
+void GameObject::setIsFalling(bool isFalling)
+{
+    this->isFalling = isFalling;
+}
+
+bool GameObject::getIsFalling()
+{
+    return this->isFalling;
+}
+
