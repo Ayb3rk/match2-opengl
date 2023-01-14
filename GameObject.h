@@ -23,6 +23,9 @@ class GameObject
         static std::vector<glm::vec3> colors;
         int verticalPosition; // vertical position in grid system
         int horizontalPosition; // horizontal position in grid system
+        float currentVerticalPosition; // current vertical position in world system
+        int numberOfColumns;
+        int numberOfRows;
         glm::vec3 color;
         bool isScaling;
         bool isFalling;
@@ -32,7 +35,7 @@ class GameObject
         glm::mat4 TranslationMatrix;
 
     public:
-        GameObject(int, int, float, glm::mat4);
+        GameObject(int, int, int, int, float);
 
         void setVerticalPosition(int);
         void setHorizontalPosition(int);
@@ -41,6 +44,7 @@ class GameObject
         void setScaleFactor(float);
         void setIsScaling(bool);
         void setIsFalling(bool);
+        void setCurrentVerticalPosition(float);
 
         int getVerticalPosition();
         int getHorizontalPosition();

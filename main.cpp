@@ -34,7 +34,6 @@ float scalingFactor = 0.0f;
 float cellWidth = 0.0f;
 float cellHeight = 0.0f;
 std::vector<std::vector<GameObject*>> gameObjects;
-bool anyClicked = false;
 
 struct Vertex
 {
@@ -588,11 +587,13 @@ void display()
     {
         for (int j = 0; j < numberOfRows; j++)
         {
+            
             if(gameObjects[i][j]->getIsScaling()){
                 gameObjects[i][j]->scale();
             }
             if(gameObjects[i][j]->getScaleFactor() >= 1.5 * scalingFactor){
                 gameObjects[i][j]->reset();
+                gameObjects[i][j]->setCurrentVerticalPosition((0.5 * (20.f / numberOfRows)));
             }
 
             glm::mat4 modelMat = gameObjects[i][j]->getModelMatrix();
@@ -620,10 +621,23 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
     }
 }
 
+bool anyClicked(){
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(gameObjects[i][j]->getIsScaling() || gameObjects[i][j]->getIsFalling()){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void mouse(GLFWwindow* window, int button, int action, int mods)
 {
     // find which grid cell is clicked
-    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !anyClicked())
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -697,7 +711,6 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     scalingFactor = (15.0f / std::max(numberOfColumns, numberOfRows)) / maxEdgeLength;
     
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
-    glm::mat4 Ttop = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
 
     gameObjects = vector<vector<GameObject*>>(numberOfColumns);
     for (int i = 0; i < numberOfColumns; i++)
@@ -705,8 +718,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
         gameObjects[i] = vector<GameObject*>(numberOfRows);
         for (int j = 0; j < numberOfRows; j++)
         {
-            glm::mat4 T = Ttop * glm::translate(glm::mat4(1.f), glm::vec3((i+0.5f) * (20.f / numberOfColumns), -(j+0.5f) * (20.f / numberOfRows), 0.f));
-            gameObjects[i][j] = new GameObject(j, i, scalingFactor, T);
+            gameObjects[i][j] = new GameObject(j, i, numberOfColumns, numberOfRows, scalingFactor);
         }
     }
 
