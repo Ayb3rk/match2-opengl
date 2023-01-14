@@ -128,9 +128,18 @@ void GameObject::reset()
     this->color = colors[rand() % colors.size()];
 }
 
+void GameObject::gameReset()
+{
+    this->scaleFactor = this->startingScaleFactor;
+    this->isScaling = false;
+    this->isFalling = false;
+    this->angle = 0.0f;
+    this->color = colors[rand() % colors.size()];
+}
+
 void GameObject::setCurrentVerticalPosition(float currentVerticalPosition)
 {
     this->currentVerticalPosition = currentVerticalPosition;
 }
 
-std::vector<glm::vec3> GameObject::colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)};
+std::vector<glm::vec3> GameObject::colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.8f, 0.8f, 0.8f)};

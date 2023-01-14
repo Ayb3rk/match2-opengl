@@ -570,6 +570,58 @@ void renderText(const std::string& text, GLfloat x, GLfloat y, GLfloat scale, gl
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+vector<vector<bool>> getColorMatchingMatrix(){
+    vector<vector<bool>> colorMatchingMatrix(numberOfColumns, vector<bool>(numberOfRows, false));
+    // check if there are 3 or more same color cubes in a row or column
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(i < numberOfColumns - 2){
+                if(gameObjects[i][j]->getColor() == gameObjects[i + 1][j]->getColor() && gameObjects[i][j]->getColor() == gameObjects[i + 2][j]->getColor()){
+                    colorMatchingMatrix[i][j] = true;
+                    colorMatchingMatrix[i + 1][j] = true;
+                    colorMatchingMatrix[i + 2][j] = true;
+                }
+            }
+            if(j < numberOfRows - 2){
+                if(gameObjects[i][j]->getColor() == gameObjects[i][j + 1]->getColor() && gameObjects[i][j]->getColor() == gameObjects[i][j + 2]->getColor()){
+                    colorMatchingMatrix[i][j] = true;
+                    colorMatchingMatrix[i][j + 1] = true;
+                    colorMatchingMatrix[i][j + 2] = true;
+                }
+            }
+        }
+    }
+    return colorMatchingMatrix;
+}
+
+void explode(){
+    vector<vector<bool>> colorMatchingMatrix = getColorMatchingMatrix();
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(colorMatchingMatrix[i][j]){
+                // set scaling to true in matching cubes
+                gameObjects[i][j]->setIsScaling(true);
+            }
+        }
+    }
+}
+
+bool anyAction(){
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(gameObjects[i][j]->getIsScaling() || gameObjects[i][j]->getIsFalling()){
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 void display()
 {
@@ -582,12 +634,14 @@ void display()
 
     glUseProgram(gProgram[0]);
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
-
+    
+    if(!anyAction()) {
+        explode();
+    }
     for (int i = 0; i < numberOfColumns; i++)
     {
         for (int j = 0; j < numberOfRows; j++)
         {
-            
             if(gameObjects[i][j]->getIsScaling()){
                 gameObjects[i][j]->scale();
             }
@@ -613,31 +667,33 @@ void display()
     assert(glGetError() == GL_NO_ERROR);
 }
 
+
+
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
-}
 
-bool anyClicked(){
-    for (int i = 0; i < numberOfColumns; i++)
+    // if R is pressed, reset the game
+    if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
-        for (int j = 0; j < numberOfRows; j++)
+        for (int i = 0; i < numberOfColumns; i++)
         {
-            if(gameObjects[i][j]->getIsScaling() || gameObjects[i][j]->getIsFalling()){
-                return true;
+            for (int j = 0; j < numberOfRows; j++)
+            {
+                gameObjects[i][j]->gameReset();
             }
         }
     }
-    return false;
+    getColorMatchingMatrix();
 }
 
 void mouse(GLFWwindow* window, int button, int action, int mods)
 {
     // find which grid cell is clicked
-    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !anyClicked())
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !anyAction())
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -722,6 +778,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
         }
     }
 
+    getColorMatchingMatrix();
 
     glfwSetKeyCallback(window, keyboard);
     glfwSetMouseButtonCallback(window, mouse);

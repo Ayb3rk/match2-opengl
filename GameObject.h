@@ -58,4 +58,5 @@ class GameObject
         void rotate();
         void scale();
         void reset();
+        void gameReset();
 };
