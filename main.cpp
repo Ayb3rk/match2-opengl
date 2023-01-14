@@ -34,7 +34,6 @@ float scalingFactor = 0.0f;
 float cellWidth = 0.0f;
 float cellHeight = 0.0f;
 std::vector<std::vector<GameObject*>> gameObjects;
-std::vector<glm::vec3> colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)};
 bool anyClicked = false;
 
 struct Vertex
@@ -585,9 +584,9 @@ void display()
     glUseProgram(gProgram[0]);
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
 
-    for (int i = 0; i < numberOfRows; i++)
+    for (int i = 0; i < numberOfColumns; i++)
     {
-        for (int j = 0; j < numberOfColumns; j++)
+        for (int j = 0; j < numberOfRows; j++)
         {
             if(gameObjects[i][j]->getIsScaling()){
                 gameObjects[i][j]->scale();
@@ -631,7 +630,7 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
         int x = (int)(xpos / cellWidth);
         int y = (int)(ypos / cellHeight);
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
-        gameObjects[y][x]->setIsScaling(true);
+        gameObjects[x][y]->setIsScaling(true);
     }
 }
 
@@ -700,17 +699,14 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
     glm::mat4 Ttop = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
 
-    gameObjects = vector<vector<GameObject*>>(numberOfRows);
-    for (int i = 0; i < numberOfRows; i++)
+    gameObjects = vector<vector<GameObject*>>(numberOfColumns);
+    for (int i = 0; i < numberOfColumns; i++)
     {
-        gameObjects[i] = vector<GameObject*>(numberOfColumns);
-        for (int j = 0; j < numberOfColumns; j++)
+        gameObjects[i] = vector<GameObject*>(numberOfRows);
+        for (int j = 0; j < numberOfRows; j++)
         {
-            glm::mat4 T = Ttop * glm::translate(glm::mat4(1.f), glm::vec3((j+0.5f) * (20.f / numberOfColumns), -(i+0.5f) * (20.f / numberOfRows), 0.f));
-            glm::mat4 R = glm::rotate(glm::mat4(1.f), glm::radians(0.0f), glm::vec3(0, 1, 0));
-            glm::vec3 color = colors[std::rand() % colors.size()];
-            gameObjects[i][j] = new GameObject(i, j, color, scalingFactor, T, R);
-
+            glm::mat4 T = Ttop * glm::translate(glm::mat4(1.f), glm::vec3((i+0.5f) * (20.f / numberOfColumns), -(j+0.5f) * (20.f / numberOfRows), 0.f));
+            gameObjects[i][j] = new GameObject(j, i, scalingFactor, T);
         }
     }
 

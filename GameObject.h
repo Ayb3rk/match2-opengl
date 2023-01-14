@@ -20,6 +20,7 @@
 class GameObject
 {
     private:
+        static std::vector<glm::vec3> colors;
         int verticalPosition; // vertical position in grid system
         int horizontalPosition; // horizontal position in grid system
         glm::vec3 color;
@@ -27,29 +28,28 @@ class GameObject
         bool isFalling;
         float scaleFactor;
         float startingScaleFactor;
+        float angle;
         glm::mat4 TranslationMatrix;
-        glm::mat4 RotationMatrix;
 
     public:
-        GameObject(int, int, glm::vec3, float, glm::mat4, glm::mat4);
+        GameObject(int, int, float, glm::mat4);
+
         void setVerticalPosition(int);
         void setHorizontalPosition(int);
         void setColor(glm::vec3);
         void setTranslationMatrix(glm::mat4);
-        void setRotationMatrix(glm::mat4);
         void setScaleFactor(float);
         void setIsScaling(bool);
         void setIsFalling(bool);
 
         int getVerticalPosition();
         int getHorizontalPosition();
-        glm::vec3 getColor();
         float getScaleFactor();
-        glm::mat4 getTranslationMatrix();
-        glm::mat4 getRotationMatrix();
-        glm::mat4 getModelMatrix();
         bool getIsScaling();
         bool getIsFalling();
+        glm::mat4 getTranslationMatrix();
+        glm::mat4 getModelMatrix();
+        glm::vec3 getColor();
 
         void rotate();
         void scale();
