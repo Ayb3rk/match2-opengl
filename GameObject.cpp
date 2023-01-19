@@ -12,7 +12,8 @@ GameObject::GameObject(int verticalPosition, int horizontalPosition, int numberO
     this->angle = 0.0f;
     this->isFalling = false;
     this->isScaling = false;
-    this->currentVerticalPosition = 0.0f;
+    this->currentVerticalPosition = -(verticalPosition+0.5f) * (20.f / numberOfRows);
+    this->isExploded = false;
 }
 
 void GameObject::setVerticalPosition(int verticalPosition)
@@ -57,6 +58,11 @@ glm::mat4 GameObject::getTranslationMatrix()
 
 glm::mat4 GameObject::getModelMatrix()
 {
+    if(this->isScaling)
+    {
+        this->scale();
+    }
+
     glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
     glm::mat4 ScaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(this->scaleFactor, this->scaleFactor, this->scaleFactor));
     glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.f), glm::radians(this->angle), glm::vec3(0, 1, 0));
@@ -66,7 +72,7 @@ glm::mat4 GameObject::getModelMatrix()
     {
         if(verticalPos > this->currentVerticalPosition) { // end of the fall
             this->isFalling = false;
-            this->currentVerticalPosition = 0.0f;
+            this->currentVerticalPosition = -(verticalPosition+0.5f) * (20.f / numberOfRows);
         }
         else { // still falling
             verticalPos = this->currentVerticalPosition;
@@ -126,6 +132,7 @@ void GameObject::reset()
     this->isFalling = true;
     this->angle = 0.0f;
     this->color = colors[rand() % colors.size()];
+    this->isExploded = true;
 }
 
 void GameObject::gameReset()
@@ -135,11 +142,21 @@ void GameObject::gameReset()
     this->isFalling = false;
     this->angle = 0.0f;
     this->color = colors[rand() % colors.size()];
+    this->isExploded = false;
 }
 
 void GameObject::setCurrentVerticalPosition(float currentVerticalPosition)
 {
     this->currentVerticalPosition = currentVerticalPosition;
+}
+bool GameObject::getIsExploded()
+{
+    return this->isExploded;
+}
+
+void GameObject::setIsExploded(bool isExploded)
+{
+    this->isExploded = isExploded;
 }
 
 std::vector<glm::vec3> GameObject::colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.8f, 0.8f, 0.8f)};

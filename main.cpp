@@ -6,6 +6,7 @@
 #include <map>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <vector>
 #include <GL/glew.h>   // The GL Header File
@@ -596,7 +597,7 @@ vector<vector<bool>> getColorMatchingMatrix(){
     return colorMatchingMatrix;
 }
 
-void explode(){
+void setScalings(){
     vector<vector<bool>> colorMatchingMatrix = getColorMatchingMatrix();
     for (int i = 0; i < numberOfColumns; i++)
     {
@@ -623,6 +624,48 @@ bool anyAction(){
     return false;
 }
 
+void setFallings(){
+    // if a grid exploded and there is a cube above it, set it to fall
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        int exploded = 0;
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(gameObjects[i][j]->getIsExploded())
+            {
+                for (int k = 0; k < j; k++)
+                {
+                    gameObjects[i][k]->setIsFalling(true);
+                    gameObjects[i][k]->setVerticalPosition(gameObjects[i][k]->getVerticalPosition()+1);
+                }
+                gameObjects[i][j]->setCurrentVerticalPosition(((exploded + 0.5) * (20.f / numberOfRows)));
+                gameObjects[i][j]->setIsExploded(false);
+                gameObjects[i][j]->setVerticalPosition(0);
+                exploded++;
+            }
+        }
+        std::sort(gameObjects[i].begin(), gameObjects[i].end(), [](GameObject* a, GameObject* b) { return a->getVerticalPosition() < b->getVerticalPosition(); });
+    }
+
+}
+
+void update(){
+    if(!anyAction()) {
+        setScalings();
+    }
+    for (int i = 0; i < numberOfColumns; i++)
+    {
+        for (int j = 0; j < numberOfRows; j++)
+        {
+            if(gameObjects[i][j]->getScaleFactor() >= 1.5 * scalingFactor){
+                gameObjects[i][j]->reset();
+            }
+            gameObjects[i][j]->rotate();
+        }
+    }
+    setFallings();
+}
+
 void display()
 {
     glClearColor(0, 0, 0, 1);
@@ -635,21 +678,12 @@ void display()
     glUseProgram(gProgram[0]);
     glm::mat4 projectionMatrix = glm::ortho(-10.f, 10.f, -10.f, 10.f, -20.f, 20.f);
     
-    if(!anyAction()) {
-        explode();
-    }
+    update();
+
     for (int i = 0; i < numberOfColumns; i++)
     {
         for (int j = 0; j < numberOfRows; j++)
         {
-            if(gameObjects[i][j]->getIsScaling()){
-                gameObjects[i][j]->scale();
-            }
-            if(gameObjects[i][j]->getScaleFactor() >= 1.5 * scalingFactor){
-                gameObjects[i][j]->reset();
-                gameObjects[i][j]->setCurrentVerticalPosition((0.5 * (20.f / numberOfRows)));
-            }
-
             glm::mat4 modelMat = gameObjects[i][j]->getModelMatrix();
             glm::mat4 modelMatInv = glm::transpose(glm::inverse(modelMat));
 
@@ -659,7 +693,7 @@ void display()
             glUniform3fv(glGetUniformLocation(gProgram[0], "kd"), 1, glm::value_ptr(gameObjects[i][j]->getColor()));
             
             drawModel();
-            gameObjects[i][j]->rotate();
+            
         }
     }
 

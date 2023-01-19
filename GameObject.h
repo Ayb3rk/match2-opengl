@@ -32,6 +32,7 @@ class GameObject
         float scaleFactor;
         float startingScaleFactor;
         float angle;
+        bool isExploded;
         glm::mat4 TranslationMatrix;
 
     public:
@@ -44,6 +45,7 @@ class GameObject
         void setScaleFactor(float);
         void setIsScaling(bool);
         void setIsFalling(bool);
+        void setIsExploded(bool);
         void setCurrentVerticalPosition(float);
 
         int getVerticalPosition();
@@ -51,6 +53,7 @@ class GameObject
         float getScaleFactor();
         bool getIsScaling();
         bool getIsFalling();
+        bool getIsExploded();
         glm::mat4 getTranslationMatrix();
         glm::mat4 getModelMatrix();
         glm::vec3 getColor();
