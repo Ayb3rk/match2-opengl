@@ -36,6 +36,8 @@ class GameObject
         glm::mat4 TranslationMatrix;
 
     public:
+        static int score;
+        static int moves;
         GameObject(int, int, int, int, float);
 
         void setVerticalPosition(int);
@@ -43,7 +45,7 @@ class GameObject
         void setColor(glm::vec3);
         void setTranslationMatrix(glm::mat4);
         void setScaleFactor(float);
-        void setIsScaling(bool);
+        void setIsScaling(bool, bool);
         void setIsFalling(bool);
         void setIsExploded(bool);
         void setCurrentVerticalPosition(float);

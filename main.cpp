@@ -605,7 +605,7 @@ void setScalings(){
         {
             if(colorMatchingMatrix[i][j]){
                 // set scaling to true in matching cubes
-                gameObjects[i][j]->setIsScaling(true);
+                gameObjects[i][j]->setIsScaling(true, false);
             }
         }
     }
@@ -697,7 +697,9 @@ void display()
         }
     }
 
-    renderText("CENG 477 - 2022", 0, 0, 1, glm::vec3(0, 1, 1));
+    std::string moves = "Moves: " + std::to_string(GameObject::moves);
+    std::string score = "Score: " + std::to_string(GameObject::score);
+    renderText(moves + " " + score, 0, 0, size, glm::vec3(1, 1, 0));
     assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -713,6 +715,8 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
     // if R is pressed, reset the game
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
+        GameObject::moves = 0;
+        GameObject::score = 0;
         for (int i = 0; i < numberOfColumns; i++)
         {
             for (int j = 0; j < numberOfRows; j++)
@@ -734,7 +738,7 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
         int x = (int)(xpos / cellWidth);
         int y = (int)(ypos / cellHeight);
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
-        gameObjects[x][y]->setIsScaling(true);
+        gameObjects[x][y]->setIsScaling(true, true);
     }
 }
 
@@ -748,8 +752,12 @@ void mainLoop(GLFWwindow* window)
     }
 }
 
+int GameObject::moves = 0;
+int GameObject::score = 0;
+
 int main(int argc, char** argv)   // Create Main Function For Bringing It All Together
 {
+    srand(time(NULL));
     if(argc != 4) {
         std::cout << "Usage: " << argv[0] << " <grid_width> <grid_height> <object_file>" << std::endl;
         return -1;

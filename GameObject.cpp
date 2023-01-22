@@ -95,9 +95,16 @@ void GameObject::scale()
     this->scaleFactor *= 1.01f;
 }
 
-void GameObject::setIsScaling(bool isScaling)
+void GameObject::setIsScaling(bool isScaling, bool isMouseClick)
 {
     this->isScaling = isScaling;
+    if(isMouseClick)
+    {
+        moves++;
+    }
+    else{
+        score++;
+    }
 }
 
 bool GameObject::getIsScaling()
