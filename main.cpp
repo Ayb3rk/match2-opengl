@@ -638,7 +638,7 @@ void setFallings(){
                     gameObjects[i][k]->setIsFalling(true);
                     gameObjects[i][k]->setVerticalPosition(gameObjects[i][k]->getVerticalPosition()+1);
                 }
-                gameObjects[i][j]->setCurrentVerticalPosition(((exploded + 0.5) * (20.f / numberOfRows)));
+                gameObjects[i][j]->setCurrentVerticalPosition(((exploded + 0.5) * (19.f / numberOfRows)));
                 gameObjects[i][j]->setIsExploded(false);
                 gameObjects[i][j]->setVerticalPosition(0);
                 exploded++;
@@ -747,7 +747,7 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
             return;
         }
         int x = (int)(xpos / cellWidth);
-        int y = (int)((ypos+8) / cellHeight);
+        int y = (int)((ypos+cellHeight/numberOfRows) / cellHeight);
         std::cout<< "ypos" << ypos << std::endl;
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
         if(x >= numberOfColumns || y >= numberOfRows){
