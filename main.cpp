@@ -680,9 +680,6 @@ void display()
     
     update();
 
-    glUniform1i(glGetUniformLocation(gProgram[0], "numberOfRows"), numberOfRows);
-    glUniform1i(glGetUniformLocation(gProgram[0], "numberOfColumns"), numberOfColumns);
-
     for (int i = 0; i < numberOfColumns; i++)
     {
         for (int j = 0; j < numberOfRows; j++)
