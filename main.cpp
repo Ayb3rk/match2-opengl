@@ -747,10 +747,11 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
             return;
         }
         int x = (int)(xpos / cellWidth);
-        int y = (int)((ypos+cellHeight/numberOfRows) / cellHeight);
+        int y = (int)(20*ypos/19-27.5*ypos/(cellHeight*cellHeight)) / cellHeight;
         std::cout<< "ypos" << ypos << std::endl;
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
         if(x >= numberOfColumns || y >= numberOfRows){
+            cout<<"Out of bounds"<<endl;
             return;
         }
         gameObjects[x][y]->setIsScaling(true, true);
