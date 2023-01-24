@@ -17,7 +17,7 @@ vec3 ks = vec3(0.8, 0.8, 0.8);
 uniform mat4 modelWithoutRotation;
 uniform mat4 modelingMat;
 uniform mat4 modelingMatInvTr;
-uniform mat4 perspectiveMat;
+uniform mat4 orthoMat;
 
 attribute vec3 inVertex;
 attribute vec3 inNormal;

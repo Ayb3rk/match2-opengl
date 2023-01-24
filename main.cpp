@@ -691,7 +691,7 @@ void display()
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelWithoutRotation"), 1, GL_FALSE, glm::value_ptr(modelWithoutRotation));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMatInvTr"), 1, GL_FALSE, glm::value_ptr(modelMatInv));
-            glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+            glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "orthoMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
             glUniform3fv(glGetUniformLocation(gProgram[0], "kd"), 1, glm::value_ptr(gameObjects[i][j]->getColor()));
 
             GLint rowPosLoc = glGetUniformLocation(gProgram[0], "rowPos");
