@@ -42,6 +42,6 @@ void main(void)
 
 	gl_FrontColor = vec4(diffuseColor+ambientColor+specularColor, 1);
 
-    gl_Position = perspectiveMat * modelingMat * vec4(inVertex, 1);
+    gl_Position = orthoMat * modelingMat * vec4(inVertex, 1);
 }
 
