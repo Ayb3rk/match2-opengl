@@ -27,7 +27,7 @@ using namespace std;
 
 GLuint gProgram[3];
 GLint gIntensityLoc;
-float gIntensity = 250;
+float gIntensity = 200;
 int numberOfRows = 0;
 int numberOfColumns = 0;
 float maxEdgeLength = 0.0f;
@@ -686,7 +686,9 @@ void display()
         {
             glm::mat4 modelMat = gameObjects[i][j]->getModelMatrix();
             glm::mat4 modelMatInv = glm::transpose(glm::inverse(modelMat));
+            glm::mat4 modelWithoutRotation = gameObjects[i][j]->getModelWithoutRotation();
 
+            glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelWithoutRotation"), 1, GL_FALSE, glm::value_ptr(modelWithoutRotation));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMatInvTr"), 1, GL_FALSE, glm::value_ptr(modelMatInv));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));

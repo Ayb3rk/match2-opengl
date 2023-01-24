@@ -58,6 +58,7 @@ class GameObject
         bool getIsExploded();
         glm::mat4 getTranslationMatrix();
         glm::mat4 getModelMatrix();
+        glm::mat4 getModelWithoutRotation();
         glm::vec3 getColor();
 
         void rotate();

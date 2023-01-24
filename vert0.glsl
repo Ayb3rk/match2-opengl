@@ -3,8 +3,8 @@
 uniform int rowPos;
 uniform int colPos;
 
-vec3 lightPos = vec3(rowPos, colPos, 5);
-vec3 eyePos = vec3(rowPos, colPos, 1);
+vec3 lightPos = vec3(rowPos, colPos, 10);
+vec3 eyePos = vec3(rowPos, colPos, 10);
 
 uniform float intensity;
 vec3 I = vec3(intensity, intensity, intensity);
@@ -14,6 +14,7 @@ uniform vec3 kd;
 vec3 ka = vec3(0.1, 0.1, 0.1);
 vec3 ks = vec3(0.8, 0.8, 0.8);
 
+uniform mat4 modelWithoutRotation;
 uniform mat4 modelingMat;
 uniform mat4 modelingMatInvTr;
 uniform mat4 perspectiveMat;
@@ -22,7 +23,8 @@ attribute vec3 inVertex;
 attribute vec3 inNormal;
 
 void main(void)
-{
+{	
+	lightPos = vec3(modelWithoutRotation * vec4(lightPos,1));
 	vec4 p = modelingMat * vec4(inVertex, 1); // translate to world coordinates
 	vec3 Lorg = lightPos - vec3(p);
 	vec3 L = normalize(Lorg);

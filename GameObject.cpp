@@ -85,6 +85,27 @@ glm::mat4 GameObject::getModelMatrix()
     return TranslationMatrix * RotationMatrix * ScaleMatrix;
 }
 
+glm::mat4 GameObject::getModelWithoutRotation(){
+    glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-10.0f, 10.0f, 0.f));
+
+    float verticalPos = -(verticalPosition+0.5f) * (20.f / numberOfRows);
+    if(this->isFalling)
+    {
+        if(verticalPos > currentVerticalPosition) { // end of the fall
+            this->isFalling = false;
+            this->currentVerticalPosition = -(verticalPosition+0.5f) * (20.f / numberOfRows);
+        }
+        else { // still falling
+            verticalPos = this->currentVerticalPosition;
+            this->currentVerticalPosition -= 0.05f;
+        }
+    }
+
+    TranslationMatrix *= glm::translate(glm::mat4(1.f), glm::vec3((this->horizontalPosition+0.5f) * (20.f / this->numberOfColumns), verticalPos, 0.f));
+    
+    return TranslationMatrix;
+}
+
 void GameObject::rotate()
 {
     this->angle += 0.5f;
