@@ -67,12 +67,12 @@ glm::mat4 GameObject::getModelMatrix()
     glm::mat4 ScaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(this->scaleFactor, this->scaleFactor, this->scaleFactor));
     glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.f), glm::radians(this->angle), glm::vec3(0, 1, 0));
 
-    float verticalPos = -(verticalPosition+0.5f) * (20.f / numberOfRows);
+    float verticalPos = -(verticalPosition+0.5f) * (19.f / numberOfRows);
     if(this->isFalling)
     {
         if(verticalPos > this->currentVerticalPosition) { // end of the fall
             this->isFalling = false;
-            this->currentVerticalPosition = -(verticalPosition+0.5f) * (20.f / numberOfRows);
+            this->currentVerticalPosition = -(verticalPosition+0.5f) * (19.f / numberOfRows);
         }
         else { // still falling
             verticalPos = this->currentVerticalPosition;
@@ -171,6 +171,7 @@ void GameObject::gameReset()
     this->angle = 0.0f;
     this->color = colors[rand() % colors.size()];
     this->isExploded = false;
+    //this->currentVerticalPosition = this->verticalPosition;
 }
 
 void GameObject::setCurrentVerticalPosition(float currentVerticalPosition)
@@ -188,4 +189,4 @@ void GameObject::setIsExploded(bool isExploded)
     this->isExploded = isExploded;
 }
 
-std::vector<glm::vec3> GameObject::colors = {glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.8f, 0.8f, 0.8f)};
+std::vector<glm::vec3> GameObject::colors = {glm::vec3(0.271,0.314,0.329), glm::vec3(0.188,0.525,0.584), glm::vec3(0.831,0.341,0.412), glm::vec3(0.902,0.616,0.271), glm::vec3(0.831,0.812,0.788), glm::vec3(0.039,0.451,0.294), glm::vec3(0.086,0.09,0.282)};

@@ -3,7 +3,7 @@
 uniform int rowPos;
 uniform int colPos;
 
-vec3 lightPos = vec3(rowPos, colPos, 10);
+vec3 lightPos = vec3(0, 0, 10);
 vec3 eyePos = vec3(rowPos, colPos, 10);
 
 uniform float intensity;

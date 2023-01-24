@@ -27,7 +27,7 @@ using namespace std;
 
 GLuint gProgram[3];
 GLint gIntensityLoc;
-float gIntensity = 200;
+float gIntensity = 150;
 int numberOfRows = 0;
 int numberOfColumns = 0;
 float maxEdgeLength = 0.0f;
@@ -743,9 +743,16 @@ void mouse(GLFWwindow* window, int button, int action, int mods)
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
+        if(ypos>=570){
+            return;
+        }
         int x = (int)(xpos / cellWidth);
-        int y = (int)(ypos / cellHeight);
+        int y = (int)((ypos+8) / cellHeight);
+        std::cout<< "ypos" << ypos << std::endl;
         std::cout << "Clicked on cell (" << y << ", " << x << ")" << std::endl;
+        if(x >= numberOfColumns || y >= numberOfRows){
+            return;
+        }
         gameObjects[x][y]->setIsScaling(true, true);
     }
 }
@@ -774,7 +781,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     numberOfColumns = atoi(argv[1]);
     numberOfRows = atoi(argv[2]);
     cellWidth = WINDOW_WIDTH / numberOfColumns;
-    cellHeight = WINDOW_HEIGHT / numberOfRows;
+    cellHeight = (WINDOW_HEIGHT-30) / numberOfRows;
     string filename = argv[3];
 
 
