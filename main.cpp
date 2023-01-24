@@ -27,7 +27,7 @@ using namespace std;
 
 GLuint gProgram[3];
 GLint gIntensityLoc;
-float gIntensity = 1000;
+float gIntensity = 250;
 int numberOfRows = 0;
 int numberOfColumns = 0;
 float maxEdgeLength = 0.0f;
@@ -680,6 +680,9 @@ void display()
     
     update();
 
+    glUniform1i(glGetUniformLocation(gProgram[0], "numberOfRows"), numberOfRows);
+    glUniform1i(glGetUniformLocation(gProgram[0], "numberOfColumns"), numberOfColumns);
+
     for (int i = 0; i < numberOfColumns; i++)
     {
         for (int j = 0; j < numberOfRows; j++)
@@ -691,7 +694,13 @@ void display()
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "modelingMatInvTr"), 1, GL_FALSE, glm::value_ptr(modelMatInv));
             glUniformMatrix4fv(glGetUniformLocation(gProgram[0], "perspectiveMat"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
             glUniform3fv(glGetUniformLocation(gProgram[0], "kd"), 1, glm::value_ptr(gameObjects[i][j]->getColor()));
-            
+
+            GLint rowPosLoc = glGetUniformLocation(gProgram[0], "rowPos");
+            GLint colPosLoc = glGetUniformLocation(gProgram[0], "colPos");
+
+            glUniform1i(rowPosLoc, gameObjects[i][j]->getHorizontalPosition());
+            glUniform1i(colPosLoc, gameObjects[i][j]->getVerticalPosition());
+
             drawModel();
             
         }
@@ -699,7 +708,7 @@ void display()
 
     std::string moves = "Moves: " + std::to_string(GameObject::moves);
     std::string score = "Score: " + std::to_string(GameObject::score);
-    renderText(moves + " " + score, 0, 0, size, glm::vec3(1, 1, 0));
+    renderText(moves + " " + score, 0, 0, 1, glm::vec3(1, 1, 0));
     assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -779,7 +788,7 @@ int main(int argc, char** argv)   // Create Main Function For Bringing It All To
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Simple Example", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "HW3", NULL, NULL);
 
 
     if (!window)

@@ -156,6 +156,7 @@ void GameObject::setCurrentVerticalPosition(float currentVerticalPosition)
 {
     this->currentVerticalPosition = currentVerticalPosition;
 }
+
 bool GameObject::getIsExploded()
 {
     return this->isExploded;
